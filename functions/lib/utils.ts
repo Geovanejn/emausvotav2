@@ -156,3 +156,180 @@ export function normalizeUsers(
   }
   return rows.map(row => normalizeUser(row, false)).filter((u): u is NormalizedUser => u !== null);
 }
+
+// Types for normalized election objects
+export type D1ElectionRow = {
+  id: number;
+  name: string;
+  is_active: number | string | boolean;
+  created_at: string;
+  closed_at?: string | null;
+};
+
+export type NormalizedElection = {
+  id: number;
+  name: string;
+  isActive: boolean;
+  createdAt: string;
+  closedAt: string | null;
+};
+
+export function normalizeElection(row: D1ElectionRow | null | undefined): NormalizedElection | null {
+  if (!row) return null;
+  
+  return {
+    id: row.id,
+    name: row.name,
+    isActive: toBoolean(row.is_active),
+    createdAt: row.created_at,
+    closedAt: row.closed_at ?? null,
+  };
+}
+
+export function normalizeElections(rows: D1ElectionRow[]): NormalizedElection[] {
+  return rows.map(row => normalizeElection(row)).filter((e): e is NormalizedElection => e !== null);
+}
+
+// Types for normalized position objects
+export type D1PositionRow = {
+  id: number;
+  name: string;
+};
+
+export type NormalizedPosition = {
+  id: number;
+  name: string;
+};
+
+export function normalizePosition(row: D1PositionRow | null | undefined): NormalizedPosition | null {
+  if (!row) return null;
+  
+  return {
+    id: row.id,
+    name: row.name,
+  };
+}
+
+export function normalizePositions(rows: D1PositionRow[]): NormalizedPosition[] {
+  return rows.map(row => normalizePosition(row)).filter((p): p is NormalizedPosition => p !== null);
+}
+
+// Types for normalized election position objects
+export type D1ElectionPositionRow = {
+  id: number;
+  election_id: number;
+  position_id: number;
+  order_index: number;
+  status: string;
+  current_scrutiny: number;
+  opened_at?: string | null;
+  closed_at?: string | null;
+  created_at: string;
+};
+
+export type NormalizedElectionPosition = {
+  id: number;
+  electionId: number;
+  positionId: number;
+  orderIndex: number;
+  status: string;
+  currentScrutiny: number;
+  openedAt: string | null;
+  closedAt: string | null;
+  createdAt: string;
+};
+
+export function normalizeElectionPosition(row: D1ElectionPositionRow | null | undefined): NormalizedElectionPosition | null {
+  if (!row) return null;
+  
+  return {
+    id: row.id,
+    electionId: row.election_id,
+    positionId: row.position_id,
+    orderIndex: row.order_index,
+    status: row.status,
+    currentScrutiny: row.current_scrutiny,
+    openedAt: row.opened_at ?? null,
+    closedAt: row.closed_at ?? null,
+    createdAt: row.created_at,
+  };
+}
+
+export function normalizeElectionPositions(rows: D1ElectionPositionRow[]): NormalizedElectionPosition[] {
+  return rows.map(row => normalizeElectionPosition(row)).filter((ep): ep is NormalizedElectionPosition => ep !== null);
+}
+
+// Types for normalized attendance objects
+export type D1AttendanceRow = {
+  id: number;
+  election_id: number;
+  election_position_id?: number | null;
+  member_id: number;
+  is_present: number | string | boolean;
+  marked_at?: string | null;
+  created_at: string;
+};
+
+export type NormalizedAttendance = {
+  id: number;
+  electionId: number;
+  electionPositionId: number | null;
+  memberId: number;
+  isPresent: boolean;
+  markedAt: string | null;
+  createdAt: string;
+};
+
+export function normalizeAttendance(row: D1AttendanceRow | null | undefined): NormalizedAttendance | null {
+  if (!row) return null;
+  
+  return {
+    id: row.id,
+    electionId: row.election_id,
+    electionPositionId: row.election_position_id ?? null,
+    memberId: row.member_id,
+    isPresent: toBoolean(row.is_present),
+    markedAt: row.marked_at ?? null,
+    createdAt: row.created_at,
+  };
+}
+
+export function normalizeAttendances(rows: D1AttendanceRow[]): NormalizedAttendance[] {
+  return rows.map(row => normalizeAttendance(row)).filter((a): a is NormalizedAttendance => a !== null);
+}
+
+// Types for normalized candidate objects
+export type D1CandidateRow = {
+  id: number;
+  name: string;
+  email: string;
+  user_id: number;
+  position_id: number;
+  election_id: number;
+};
+
+export type NormalizedCandidate = {
+  id: number;
+  name: string;
+  email: string;
+  userId: number;
+  positionId: number;
+  electionId: number;
+};
+
+export function normalizeCandidate(row: D1CandidateRow | null | undefined): NormalizedCandidate | null {
+  if (!row) return null;
+  
+  return {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    userId: row.user_id,
+    positionId: row.position_id,
+    electionId: row.election_id,
+  };
+}
+
+export function normalizeCandidates(rows: D1CandidateRow[]): NormalizedCandidate[] {
+  return rows.map(row => normalizeCandidate(row)).filter((c): c is NormalizedCandidate => c !== null);
+}
