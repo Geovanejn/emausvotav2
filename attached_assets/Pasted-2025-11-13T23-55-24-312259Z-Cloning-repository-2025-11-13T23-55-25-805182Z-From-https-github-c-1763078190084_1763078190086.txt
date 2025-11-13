@@ -1,0 +1,106 @@
+2025-11-13T23:55:24.312259Z	Cloning repository...
+2025-11-13T23:55:25.805182Z	From https://github.com/Geovanejn/emausvotav2
+2025-11-13T23:55:25.805663Z	 * branch            ed0bd44dc0ee6f7a33672f6cc7ae98360b52e7be -> FETCH_HEAD
+2025-11-13T23:55:25.80587Z	
+2025-11-13T23:55:26.091033Z	HEAD is now at ed0bd44 Initial Cloudflare deploy
+2025-11-13T23:55:26.091489Z	
+2025-11-13T23:55:26.175538Z	
+2025-11-13T23:55:26.176304Z	Using v2 root directory strategy
+2025-11-13T23:55:26.197904Z	Success: Finished cloning repository files
+2025-11-13T23:55:28.072755Z	Checking for configuration in a Wrangler configuration file (BETA)
+2025-11-13T23:55:28.073614Z	
+2025-11-13T23:55:28.074931Z	Found wrangler.toml file. Reading build configuration...
+2025-11-13T23:55:28.082386Z	pages_build_output_dir: dist
+2025-11-13T23:55:28.082541Z	Build environment variables: 
+2025-11-13T23:55:28.082957Z	  - R2_PUBLIC_URL: https://pub-39e66b84b6f1472fb913c941ca636fc6.r2.dev
+2025-11-13T23:55:29.182171Z	Successfully read wrangler.toml file.
+2025-11-13T23:55:29.249254Z	Detected the following tools from environment: npm@10.9.2, nodejs@22.16.0
+2025-11-13T23:55:29.24989Z	Installing project dependencies: npm clean-install --progress=false
+2025-11-13T23:55:34.350781Z	npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+2025-11-13T23:55:34.379468Z	npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+2025-11-13T23:55:41.585866Z	
+2025-11-13T23:55:41.5865Z	added 645 packages, and audited 646 packages in 12s
+2025-11-13T23:55:41.586636Z	
+2025-11-13T23:55:41.587035Z	85 packages are looking for funding
+2025-11-13T23:55:41.587146Z	  run `npm fund` for details
+2025-11-13T23:55:41.608705Z	
+2025-11-13T23:55:41.609231Z	8 vulnerabilities (3 low, 5 moderate)
+2025-11-13T23:55:41.60947Z	
+2025-11-13T23:55:41.609593Z	To address issues that do not require attention, run:
+2025-11-13T23:55:41.609783Z	  npm audit fix
+2025-11-13T23:55:41.609928Z	
+2025-11-13T23:55:41.61054Z	To address all issues (including breaking changes), run:
+2025-11-13T23:55:41.610677Z	  npm audit fix --force
+2025-11-13T23:55:41.6108Z	
+2025-11-13T23:55:41.610985Z	Run `npm audit` for details.
+2025-11-13T23:55:41.639961Z	Executing user command: npm run build
+2025-11-13T23:55:42.014922Z	
+2025-11-13T23:55:42.015184Z	> rest-express@1.0.0 build
+2025-11-13T23:55:42.015315Z	> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+2025-11-13T23:55:42.015738Z	
+2025-11-13T23:55:42.283531Z	[36mvite v5.4.20 [32mbuilding for production...[36m[39m
+2025-11-13T23:55:42.33304Z	transforming...
+2025-11-13T23:55:42.638451Z	Browserslist: browsers data (caniuse-lite) is 13 months old. Please run:
+2025-11-13T23:55:42.639074Z	  npx update-browserslist-db@latest
+2025-11-13T23:55:42.639231Z	  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+2025-11-13T23:55:43.364506Z	
+2025-11-13T23:55:43.364806Z	A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+2025-11-13T23:55:43.90172Z	[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/opt/buildhome/repo/shared/schema.ts". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+2025-11-13T23:55:47.985494Z	[32m✓[39m 2320 modules transformed.
+2025-11-13T23:55:48.282042Z	rendering chunks...
+2025-11-13T23:55:48.629292Z	computing gzip size...
+2025-11-13T23:55:48.664177Z	[2m../dist/public/[22m[32mindex.html                                              [39m[1m[2m    2.19 kB[22m[1m[22m[2m │ gzip:   0.87 kB[22m
+2025-11-13T23:55:48.664509Z	[2m../dist/public/[22m[2massets/[22m[32mEMAÚS v3 sem fundo_1761786105447-Dlf0hS8V.png    [39m[1m[2m   32.54 kB[22m[1m[22m
+2025-11-13T23:55:48.664631Z	[2m../dist/public/[22m[2massets/[22m[32mFundo Layout stories_1761783891823-DzuZO_B1.png  [39m[1m[2m  124.80 kB[22m[1m[22m
+2025-11-13T23:55:48.664762Z	[2m../dist/public/[22m[2massets/[22m[32mlogo-animated-CdYgjZ42.webp                      [39m[1m[2m1,107.22 kB[22m[1m[22m
+2025-11-13T23:55:48.664869Z	[2m../dist/public/[22m[2massets/[22m[35mindex-C3xpq0eR.css                               [39m[1m[2m   83.37 kB[22m[1m[22m[2m │ gzip:  13.42 kB[22m
+2025-11-13T23:55:48.665027Z	[2m../dist/public/[22m[2massets/[22m[36mpurify.es-sOfw8HaZ.js                            [39m[1m[2m   22.67 kB[22m[1m[22m[2m │ gzip:   8.79 kB[22m
+2025-11-13T23:55:48.665145Z	[2m../dist/public/[22m[2massets/[22m[36mindex.es-5HpCY3Wz.js                             [39m[1m[2m  150.56 kB[22m[1m[22m[2m │ gzip:  51.50 kB[22m
+2025-11-13T23:55:48.665272Z	[2m../dist/public/[22m[2massets/[22m[36mindex-CvRVposK.js                                [39m[1m[33m1,277.60 kB[39m[22m[2m │ gzip: 382.44 kB[22m
+2025-11-13T23:55:48.665545Z	[33m
+2025-11-13T23:55:48.665705Z	[32m✓ built in 6.36s[39m
+2025-11-13T23:55:48.665833Z	(!) Some chunks are larger than 500 kB after minification. Consider:
+2025-11-13T23:55:48.665946Z	- Using dynamic import() to code-split the application
+2025-11-13T23:55:48.666063Z	- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+2025-11-13T23:55:48.66616Z	- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+2025-11-13T23:55:48.741436Z	
+2025-11-13T23:55:48.741811Z	  dist/index.js  143.4kb
+2025-11-13T23:55:48.741982Z	
+2025-11-13T23:55:48.742099Z	⚡ Done in 18ms
+2025-11-13T23:55:48.764334Z	Finished
+2025-11-13T23:55:49.695656Z	Checking for configuration in a Wrangler configuration file (BETA)
+2025-11-13T23:55:49.696485Z	
+2025-11-13T23:55:49.697308Z	Found wrangler.toml file. Reading build configuration...
+2025-11-13T23:55:49.705644Z	pages_build_output_dir: dist
+2025-11-13T23:55:49.705886Z	Build environment variables: 
+2025-11-13T23:55:49.705985Z	  - R2_PUBLIC_URL: https://pub-39e66b84b6f1472fb913c941ca636fc6.r2.dev
+2025-11-13T23:55:50.80637Z	Successfully read wrangler.toml file.
+2025-11-13T23:55:50.807575Z	Found Functions directory at /functions. Uploading.
+2025-11-13T23:55:50.81362Z	 ⛅️ wrangler 3.101.0
+2025-11-13T23:55:50.813797Z	-------------------
+2025-11-13T23:55:52.042742Z	[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mBuild failed with 1 error:[0m
+2025-11-13T23:55:52.043441Z	
+2025-11-13T23:55:52.043607Z	  [31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNo matching export in "lib/email.ts" for import "sendEmail"[0m
+2025-11-13T23:55:52.043727Z	  
+2025-11-13T23:55:52.043828Z	      api/elections/[electionId]/audit/send-email.ts:5:9:
+2025-11-13T23:55:52.043959Z	  [37m      5 │ import { [32msendEmail[37m } from "../../../../lib/email";
+2025-11-13T23:55:52.044169Z	          ╵          [32m~~~~~~~~~[0m
+2025-11-13T23:55:52.04427Z	  
+2025-11-13T23:55:52.044641Z	  
+2025-11-13T23:55:52.044834Z	
+2025-11-13T23:55:52.044921Z	
+2025-11-13T23:55:52.046645Z	
+2025-11-13T23:55:52.048704Z	[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mBuild failed with 1 error:[0m
+2025-11-13T23:55:52.048868Z	
+2025-11-13T23:55:52.048999Z	  [31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNo matching export in "lib/email.ts" for import "sendEmail"[0m
+2025-11-13T23:55:52.049117Z	  
+2025-11-13T23:55:52.049231Z	      api/elections/[electionId]/audit/send-email.ts:5:9:
+2025-11-13T23:55:52.049374Z	  [37m      5 │ import { [32msendEmail[37m } from "../../../../lib/email";
+2025-11-13T23:55:52.049488Z	          ╵          [32m~~~~~~~~~[0m
+2025-11-13T23:55:52.049595Z	  
+2025-11-13T23:55:52.049705Z	  
+2025-11-13T23:55:52.04982Z	
+2025-11-13T23:55:52.04992Z	
+2025-11-13T23:55:52.076729Z	🪵  Logs were written to "/root/.config/.wrangler/logs/wrangler-2025-11-13_23-55-51_442.log"
+2025-11-13T23:55:52.089867Z	Failed building Pages Functions.
+2025-11-13T23:55:53.41585Z	Failed: generating Pages Functions failed. Check the logs above for more information. If this continues for an unknown reason, contact support: https://cfl.re/3WgEyrH

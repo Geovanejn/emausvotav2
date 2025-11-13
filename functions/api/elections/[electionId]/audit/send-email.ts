@@ -2,7 +2,7 @@
 import type { EventContext } from "../../../../lib/types";
 import { jsonResponse, errorResponse, parseBody, handleError } from "../../../../lib/utils";
 import { requireAuth } from "../../../../lib/auth";
-import { sendEmail } from "../../../../lib/email";
+import { sendAuditEmail } from "../../../../lib/email";
 
 export async function onRequestPost(context: EventContext<{ electionId: string }>) {
   try {
@@ -33,16 +33,12 @@ export async function onRequestPost(context: EventContext<{ electionId: string }
       return errorResponse("Eleição não encontrada", 404);
     }
 
-    // Send email
-    const emailSent = await sendEmail(
-      context,
+    // Send email using the correct sendAuditEmail function
+    const emailSent = await sendAuditEmail(
+      context.env,
       body.recipientEmail,
-      `Relatório de Auditoria - ${election.name}`,
-      `
-        <h2>Relatório de Auditoria</h2>
-        <p>Segue em anexo o relatório de auditoria da eleição "${election.name}".</p>
-        <p><a href="${body.pdfUrl}">Clique aqui para acessar o PDF</a></p>
-      `
+      election.name,
+      body.pdfUrl
     );
 
     if (!emailSent) {
