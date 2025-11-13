@@ -8,6 +8,7 @@ export interface Env {
   RESEND_FROM_EMAIL: string;
   JWT_SECRET: string;
   R2_PUBLIC_URL: string;
+  ENVIRONMENT?: string; // Optional: "development" or "production"
 }
 
 export type EventContext<T = unknown> = {
