@@ -1,4 +1,4 @@
-name = "emausvota"
+name = "emausvota-worker"
 compatibility_date = "2025-01-01"
 pages_build_output_dir = "dist"
 
@@ -14,7 +14,7 @@ database_id = "4eb4ca8d-4e1f-4c30-8016-74052544d510"
 # R2 BUCKET
 ####################################
 [[r2_buckets]]
-binding = "FOTOS"
+binding = "R2"
 bucket_name = "emausvota-fotos"
 
 ####################################

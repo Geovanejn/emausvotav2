@@ -57,7 +57,7 @@ export async function onRequestPost(context: EventContext) {
     const key = `photos/${fileName}`;
 
     // Upload to R2
-    await context.env.FOTOS.put(key, blob, {
+    await context.env.R2.put(key, blob, {
       httpMetadata: {
         contentType,
       },

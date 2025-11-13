@@ -3,7 +3,7 @@ import type { User } from "@shared/schema";
 
 export interface Env {
   DB: D1Database;
-  FOTOS: R2Bucket;
+  R2: R2Bucket;
   RESEND_API_KEY: string;
   RESEND_FROM_EMAIL: string;
   JWT_SECRET: string;
