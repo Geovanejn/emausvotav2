@@ -61,7 +61,7 @@
 
 ## 📊 Migration Progress
 
-### Routes Migrated: 6 / 42 (14%)
+### Routes Migrated: 12 / 42 (29%)
 
 **Auth Routes (6/6) ✅ COMPLETE**
 - ✅ POST /api/auth/login
@@ -71,15 +71,13 @@
 - ✅ POST /api/auth/login-password
 - ✅ GET /api/auth/validate-token
 
-**Admin Routes (0/8)**
-- ⏳ POST /api/admin/members (create member)
-- ⏳ GET /api/members (list all members)
-- ⏳ GET /api/members/:id
-- ⏳ PATCH /api/members/:id
-- ⏳ DELETE /api/members/:id
-- ⏳ POST /api/admin/upload-photo
-- ⏳ POST /api/admin/import-members
-- ⏳ POST /api/admin/seed-positions
+**Admin & Member Routes (6/6) ✅ COMPLETE**
+- ✅ POST /api/admin/members (create member with hashed password)
+- ✅ PATCH /api/admin/members/:id (dynamic UPDATE with Express parity)
+- ✅ DELETE /api/admin/members/:id (cascade delete, admin protection)
+- ✅ GET /api/members (list all members)
+- ✅ GET /api/members/non-admins (election filtering: winners + attendance)
+- ✅ GET /api/positions (public route)
 
 **Election Routes (0/15+)**
 - ⏳ All election CRUD operations

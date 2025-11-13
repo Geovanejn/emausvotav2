@@ -79,17 +79,38 @@ export async function authenticateToken(context: EventContext): Promise<AuthUser
   }
 }
 
-export async function requireAuth(context: EventContext): Promise<Response | AuthUser> {
+/**
+ * Require authentication and optionally admin privileges
+ * @param context EventContext
+ * @param adminRequired Whether admin privileges are required (default: false)
+ * @returns { user: AuthUser } on success, { error: Response } on failure
+ */
+export async function requireAuth(
+  context: EventContext,
+  adminRequired: boolean = false
+): Promise<{ user: AuthUser } | { error: Response }> {
   const user = await authenticateToken(context);
   
   if (!user) {
-    return new Response(
-      JSON.stringify({ message: "Token não fornecido ou inválido" }), 
-      { status: 401, headers: { "Content-Type": "application/json" } }
-    );
+    return {
+      error: new Response(
+        JSON.stringify({ message: "Token não fornecido ou inválido" }),
+        { status: 401, headers: { "Content-Type": "application/json" } }
+      )
+    };
   }
   
-  return user;
+  // Check admin requirement if specified
+  if (adminRequired && !user.isAdmin) {
+    return {
+      error: new Response(
+        JSON.stringify({ message: "Acesso negado: apenas administradores" }),
+        { status: 403, headers: { "Content-Type": "application/json" } }
+      )
+    };
+  }
+  
+  return { user };
 }
 
 export function requireAdmin(user: AuthUser): Response | null {
