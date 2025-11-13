@@ -2,31 +2,12 @@
 import { z } from "zod";
 import type { EventContext } from "../../lib/types";
 import { jsonResponse, errorResponse, parseBody, handleError, generateVerificationCode, normalizeUser } from "../../lib/utils";
+import { sendVerificationEmail, sendPasswordResetEmail } from "../../lib/email";
 
 const requestCodeSchema = z.object({
   email: z.string().email("Email inválido"),
   isPasswordReset: z.boolean().optional(),
 });
-
-// TODO: CRITICAL - Implement Resend email integration before production deployment
-// This stub always returns false, causing codes to be logged instead of emailed
-async function sendEmail(
-  env: any,
-  email: string,
-  code: string,
-  isPasswordReset: boolean
-): Promise<boolean> {
-  // IMPLEMENTATION REQUIRED:
-  // const resend = new Resend(env.RESEND_API_KEY);
-  // await resend.emails.send({
-  //   from: env.RESEND_FROM_EMAIL,
-  //   to: email,
-  //   subject: isPasswordReset ? "Recuperação de Senha" : "Código de Verificação",
-  //   html: `...` // Use same templates from server/email.ts
-  // });
-  console.log(`[EMAIL STUB] Code for ${email}: ${code} (reset: ${isPasswordReset})`);
-  return false; // STUB: Always returns false until Resend is implemented
-}
 
 export async function onRequestPost(context: EventContext) {
   try {
@@ -47,7 +28,13 @@ export async function onRequestPost(context: EventContext) {
     }
     
     // Normalize user data from D1
-    const user = normalizeUser(userRow, false);
+    // Note: D1.first() returns Record<string, unknown> which requires 'as any' cast
+    // normalizeUser performs defensive type conversion (toBoolean, null checks)
+    const user = normalizeUser(userRow as any, false);
+    
+    if (!user) {
+      return errorResponse("Erro ao processar dados do usuário", 500);
+    }
     
     // Check if user already has a password and this is not a reset
     if (user.hasPassword && !validatedData.isPasswordReset) {
@@ -76,13 +63,10 @@ export async function onRequestPost(context: EventContext) {
       .bind(validatedData.email, code, expiresAt, isPasswordReset ? 1 : 0)
       .run();
     
-    // Send email
-    const emailSent = await sendEmail(
-      context.env,
-      validatedData.email,
-      code,
-      isPasswordReset
-    );
+    // Send email using Resend
+    const emailSent = isPasswordReset
+      ? await sendPasswordResetEmail(context.env, validatedData.email, code)
+      : await sendVerificationEmail(context.env, validatedData.email, code);
     
     if (!emailSent) {
       console.log(

@@ -28,10 +28,20 @@
   - ✅ normalizeUsers() with strict typing (no `as any`)
   - ✅ Full User schema coverage from @shared/schema
 
-### 3. Example Functions (Conversion Templates)
-- ✅ `functions/api/auth/login.ts` - Async JWT, normalized responses
-- ✅ `functions/api/auth/request-code.ts` - Normalized user data, camelCase API
-  - ⚠️ **TODO**: Implement Resend email integration (currently stubbed)
+### 3. Auth Functions (Complete)
+- ✅ `functions/api/auth/login.ts` - Email/password login
+- ✅ `functions/api/auth/login-password.ts` - Alternative login endpoint
+- ✅ `functions/api/auth/request-code.ts` - Verification code generation (Resend integrated)
+- ✅ `functions/api/auth/verify-code.ts` - Code verification
+- ✅ `functions/api/auth/set-password.ts` - Password setup/reset
+- ✅ `functions/api/auth/validate-token.ts` - JWT validation
+
+### 4. Email Integration
+- ✅ `functions/lib/email.ts` - Complete Resend integration
+  - ✅ sendVerificationEmail() - First access codes
+  - ✅ sendPasswordResetEmail() - Password recovery
+  - ✅ sendBirthdayEmail() - Birthday notifications
+  - ✅ sendAuditEmail() - Audit report delivery
 
 ### 4. Documentation
 - ✅ `CLOUDFLARE_DEPLOY.md` - Comprehensive deployment guide
@@ -50,15 +60,15 @@
 
 ## 📊 Migration Progress
 
-### Routes Migrated: 2 / 45+ (4%)
+### Routes Migrated: 6 / 42 (14%)
 
-**Auth Routes (2/6)**
+**Auth Routes (6/6) ✅ COMPLETE**
 - ✅ POST /api/auth/login
-- ✅ POST /api/auth/request-code
-- ⏳ POST /api/auth/verify-code
-- ⏳ POST /api/auth/set-password
-- ⏳ GET /api/auth/validate-token
-- ⏳ POST /api/auth/logout
+- ✅ POST /api/auth/request-code (with Resend integration)
+- ✅ POST /api/auth/verify-code
+- ✅ POST /api/auth/set-password
+- ✅ POST /api/auth/login-password
+- ✅ GET /api/auth/validate-token
 
 **Admin Routes (0/8)**
 - ⏳ POST /api/admin/members (create member)
@@ -114,13 +124,13 @@
 ## ⚠️ Known Issues & TODOs
 
 ### Critical (Blocks Production Deploy)
-1. **Email Integration**: Resend adapter not implemented
-   - File: `functions/api/auth/request-code.ts`
-   - Status: Stubbed with TODO comments
-   - Required for: Password reset, verification codes
+1. ~~**Email Integration**~~ ✅ **COMPLETE**
+   - Files: `functions/lib/email.ts`, integrated in auth routes
+   - Status: Fully implemented with Resend
+   - Features: Verification, password reset, birthday, audit emails
 
 ### High Priority
-2. **Remaining Routes**: 43+ Express routes to convert
+2. **Remaining Routes**: 36 Express routes to convert (6/42 complete = 14%)
 3. **Scheduled Jobs**: Birthday email cron not implemented
    - Needs: Separate Worker with cron trigger
    - Schedule: Daily at 7 AM Brasília time
@@ -138,11 +148,12 @@
 
 ## 🎯 Next Steps
 
-### Phase 1: Complete Auth Routes
-1. Convert verify-code.ts
-2. Convert set-password.ts
-3. Implement Resend email service
-4. Test complete auth flow with D1
+### ~~Phase 1: Complete Auth Routes~~ ✅ DONE
+1. ✅ Convert verify-code.ts
+2. ✅ Convert set-password.ts
+3. ✅ Convert login-password.ts
+4. ✅ Implement Resend email service
+5. ⏳ Test complete auth flow with D1
 
 ### Phase 2: Admin & Member Routes
 1. Convert member CRUD operations

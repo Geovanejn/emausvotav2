@@ -78,7 +78,7 @@ export function generateVerificationCode(): string {
 }
 
 // Types for normalized user objects matching @shared/schema User type
-type D1UserRow = {
+export type D1UserRow = {
   id: number;
   full_name: string;
   email: string;
