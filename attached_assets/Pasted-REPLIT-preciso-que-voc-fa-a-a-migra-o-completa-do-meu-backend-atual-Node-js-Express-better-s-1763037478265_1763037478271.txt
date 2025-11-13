@@ -1,0 +1,240 @@
+REPLIT, preciso que você faça a migração completa do meu backend atual (Node.js + Express + better-sqlite3 + uploads locais + Resend + lógica de eleições) para a arquitetura do Cloudflare Pages. NÃO remova recursos nem altere lógica. Apenas adapte. Siga exatamente as instruções abaixo:
+
+
+---
+
+🟦 1. Mantenha tudo que já existe
+
+Mesmas rotas
+
+Mesma lógica de eleições
+
+Mesmo fluxo de membros/candidatos/votos
+
+Mesmo retorno JSON
+
+Mesmas validações
+
+Todo o frontend deve continuar exatamente igual
+
+
+Não apague nada do sistema.
+Somente converta.
+
+
+---
+
+🟦 2. Converter Express → Cloudflare Functions
+
+Cada rota deve virar um arquivo em:
+
+/functions/api/NOME-DA-ROTA.ts
+
+Com formato:
+
+export async function onRequestPost(context) { ... }
+export async function onRequestGet(context) { ... }
+
+As rotas DEVE manter os mesmos paths:
+
+/api/login
+
+/api/cadastrar-membro
+
+/api/cadastrar-candidato
+
+/api/listar-membros
+
+/api/listar-eleicoes
+
+/api/votar
+
+/api/enviar-email
+
+etc.
+
+
+
+---
+
+🟦 3. Converter better-sqlite3 → Cloudflare D1
+
+ANTES (Render):
+
+db.prepare("SELECT * FROM membros").all();
+
+DEPOIS (Cloudflare):
+
+await context.env.DB
+  .prepare("SELECT * FROM membros")
+  .all();
+
+ANTES:
+
+db.prepare("INSERT INTO ...").run();
+
+DEPOIS:
+
+await context.env.DB
+  .prepare("INSERT INTO ... VALUES (?, ?, ?)")
+  .bind(a, b, c)
+  .run();
+
+👉 Replit, converta TODAS as queries para D1.
+
+
+---
+
+🟦 4. Converter uploads locais → Cloudflare R2
+
+ANTES:
+
+fs.writeFileSync("uploads/" + filename, file);
+
+DEPOIS:
+
+await context.env.FOTOS.put(filename, file.stream(), {
+  httpMetadata: { contentType: file.type }
+});
+
+E gerar URL pública:
+
+const fotoUrl = `${context.env.R2_PUBLIC_URL}/${filename}`;
+
+Essa URL deve ser salva no banco.
+
+
+---
+
+🟦 5. Converter Resend (process.env → context.env)
+
+ANTES:
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+DEPOIS:
+
+const resend = new Resend(context.env.RESEND_API_KEY);
+
+E enviar email usando:
+
+await resend.emails.send({
+  from: context.env.RESEND_FROM_EMAIL,
+  to: destinatario,
+  subject,
+  html
+});
+
+
+---
+
+🟦 6. Criar wrangler.toml completamente funcional
+
+Replit, gere o arquivo:
+
+name = "emausvota"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "emausvota-db"
+database_id = "ID_DO_D1"
+
+[[r2_buckets]]
+binding = "FOTOS"
+bucket_name = "emausvota-fotos"
+
+[vars]
+R2_PUBLIC_URL = "URL_PUBLICA_DO_BUCKET"
+
+
+---
+
+🟦 7. Estrutura final de pastas
+
+Replit, reorganize automaticamente para:
+
+/functions
+  /api
+    login.ts
+    cadastrar-membro.ts
+    cadastrar-candidato.ts
+    listar-membros.ts
+    listar-eleicoes.ts
+    votar.ts
+    enviar-email.ts
+/src
+  (se houver utilidades)
+public/ (frontend original permanece igual)
+wrangler.toml
+package.json
+
+
+---
+
+🟦 8. Manter toda lógica do sistema
+
+Replit, NÃO MUDE:
+
+a lógica do primeiro/segundo/terceiro escrutínio
+
+o desempate por idade
+
+o critério de presença
+
+toda a lógica de votos
+
+toda a lógica de cadastro de membros
+
+toda a lógica de autenticação
+
+todo o controle de cargos
+
+o fluxo de eleição
+
+
+Apenas adapte para Functions + D1 + R2.
+
+
+---
+
+🟦 9. Configurar tudo para deploy no Cloudflare Pages
+
+Backend em /functions/api
+
+Frontend na pasta correta
+
+D1 vinculado via binding "DB"
+
+R2 vinculado via binding "FOTOS"
+
+Variáveis de ambiente acessíveis via context.env
+
+
+
+---
+
+🟦 10. Gere o código final e faça todas as substituições necessárias automaticamente
+
+Replit, gere:
+
+Todos os novos arquivos .ts
+
+wrangler.toml
+
+Scripts SQL adaptados para D1
+
+Código ajustado para R2
+
+Código ajustado para Resend
+
+Estrutura final montada
+
+
+E garanta que:
+
+tudo compile
+
+tudo funcione no Cloudflare
+
+toda lógica se mantenha intacta
