@@ -1,0 +1,133 @@
+You will now finalize the integration of the Emaús Vota system with Cloudflare Workers, D1 Database, R2 Storage and Resend email API.
+
+The entire Cloudflare infrastructure is already created and the Worker is deployed.
+Your task is to configure the project to run 100% on Cloudflare, using the information below.
+
+🔷 1. Update wrangler.toml
+
+Use this exact configuration:
+
+name = "emausvota-worker"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+####################################
+# D1 DATABASE
+####################################
+[[d1_databases]]
+binding = "DB"
+database_id = "4eb4ca8d-4e1f-4c30-8016-74052544d510"
+database_name = "emausvota-db"
+
+####################################
+# R2 BUCKET
+####################################
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "emausvota-fotos"
+
+####################################
+# ENV VARS
+####################################
+[vars]
+R2_PUBLIC_URL = "https://pub-39e66b84b6f1472fb913c941ca636fc6.r2.dev"
+
+
+---
+
+🔶 2. Set all required secrets using Wrangler
+
+Run these commands and use the exact values below:
+
+wrangler secret put JWT_SECRET
+
+Value:
+
+8734f1e5b92c478be8173af3d2f4ee1c
+
+wrangler secret put RESEND_API_KEY
+
+Value:
+
+re_Yr1HaGUQ_KZVQzTHT5zfEoXAwUYYGAbpn
+
+wrangler secret put RESEND_FROM_EMAIL
+
+Value:
+
+suporte@emausvota.com.br
+
+wrangler secret put R2_ACCESS_KEY_ID
+
+Value:
+
+25c9b14c465587ef0bb8a05255b4c0a1
+
+wrangler secret put R2_SECRET_ACCESS_KEY
+
+Value:
+
+5c3ea755bc532c2f60acedca698c92e5b2e530e092c1eb400215b6a07d64f338
+
+
+---
+
+🔷 3. Important notes about the Worker
+
+The Worker is already deployed at:
+
+
+https://emausvota.com.br
+
+Bindings already exist in Cloudflare:
+
+env.DB → D1 database
+
+env.R2 → R2 bucket
+
+
+
+Do not recreate them; only ensure the code uses these bindings.
+
+
+---
+
+🟩 4. Update the code to use Cloudflare services
+
+Replace any old file upload code (previously using local storage or fs) with Cloudflare R2 API using:
+
+
+await env.R2.put("filename", fileContent, { httpMetadata })
+
+Replace any old DB calls with:
+
+
+await env.DB.prepare("SQL QUERY").bind(values...).run()
+
+Resend emails must use the secret:
+
+
+const apiKey = env.RESEND_API_KEY
+
+
+---
+
+🚀 5. After finishing everything
+
+Perform:
+
+wrangler deploy
+
+The system must now run fully serverless, without Render, without sleeping, storing images in R2 and all data in D1.
+
+
+---
+
+IMPORTANT:
+All UI text must remain in Portuguese (Brazil).
+Backend code and internal configurations can stay in English.
+
+
+---
+
+When you finish, respond only in Portuguese telling me everything you changed.

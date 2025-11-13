@@ -1,40 +1,33 @@
 name = "emausvota"
-compatibility_date = "2024-11-01"
+compatibility_date = "2025-01-01"
 pages_build_output_dir = "dist"
 
-# D1 Database binding
+####################################
+# D1 DATABASE
+####################################
 [[d1_databases]]
 binding = "DB"
 database_name = "emausvota-db"
-database_id = "PLACEHOLDER_DB_ID"  # Replace with your actual D1 database ID after creating it
+database_id = "4eb4ca8d-4e1f-4c30-8016-74052544d510"
 
-# R2 Bucket binding for photo uploads
+####################################
+# R2 BUCKET
+####################################
 [[r2_buckets]]
 binding = "FOTOS"
 bucket_name = "emausvota-fotos"
-preview_bucket_name = "emausvota-fotos-dev"
 
-# Environment variables (non-sensitive)
+####################################
+# ENV VARS
+####################################
 [vars]
-R2_PUBLIC_URL = "https://fotos.emausvota.com.br"  # Replace with your actual R2 public URL or custom domain
+R2_PUBLIC_URL = "https://pub-39e66b84b6f1472fb913c941ca636fc6.r2.dev"
 
 # Sensitive environment variables (use wrangler secret put for these in production)
 # Don't commit these values to git!
 # Required secrets (set using wrangler secret put):
-# - RESEND_API_KEY: Your Resend API key for sending emails
-# - RESEND_FROM_EMAIL: Email address to send from (e.g., suporte@emausvota.com.br)
-# - JWT_SECRET: Secret key for JWT token generation (NEVER commit this!)
-
-# Development environment (optional)
-[env.dev]
-[[env.dev.d1_databases]]
-binding = "DB"
-database_name = "emausvota-db-dev"
-database_id = "PLACEHOLDER_DEV_DB_ID"
-
-[[env.dev.r2_buckets]]
-binding = "FOTOS"
-bucket_name = "emausvota-fotos-dev"
-
-[env.dev.vars]
-R2_PUBLIC_URL = "https://pub-HASH.r2.dev"  # Use R2.dev subdomain for development
+# - JWT_SECRET
+# - RESEND_API_KEY
+# - RESEND_FROM_EMAIL
+# - R2_ACCESS_KEY_ID
+# - R2_SECRET_ACCESS_KEY
