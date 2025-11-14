@@ -20,66 +20,100 @@ export async function onRequestPost(context: EventContext) {
 
     const { DB } = context.env;
 
-    // Deactivate all current active elections
-    await DB.prepare("UPDATE elections SET is_active = 0 WHERE is_active = 1").run();
-
-    // Create election
-    const result = await DB
-      .prepare(`
-        INSERT INTO elections (name, is_active, created_at)
-        VALUES (?, ?, datetime('now'))
-        RETURNING id, name, is_active, created_at, closed_at
-      `)
-      .bind(body.name, toInt(true))
-      .first<D1ElectionRow>();
-
-    if (!result) {
-      return errorResponse("Erro ao criar eleição", 500);
-    }
-
-    // CRITICAL: Create election_positions for all positions (sequential voting)
-    // Get all positions ordered by display_order
+    // GUARD: Validate positions exist BEFORE making any database changes
     const positionsResult = await DB
       .prepare("SELECT * FROM positions ORDER BY display_order ASC")
       .all();
 
     const positions = positionsResult.results;
 
-    // GUARD: Prevent creating elections without positions (would break the system)
     if (!positions || positions.length === 0) {
-      // Rollback: Delete the election we just created since it would be broken
-      await DB
-        .prepare("DELETE FROM elections WHERE id = ?")
-        .bind(result.id)
-        .run();
-      
       return errorResponse(
         "Não é possível criar eleição sem cargos cadastrados. Por favor, cadastre os cargos primeiro.",
         400
       );
     }
 
-    // Create election_position for each position, all starting as 'pending'
-    for (let i = 0; i < positions.length; i++) {
-      const position = positions[i] as any;
-      await DB
-        .prepare(`
-          INSERT INTO election_positions (
-            election_id, 
-            position_id, 
-            order_index, 
-            status, 
-            current_scrutiny,
-            created_at
-          )
-          VALUES (?, ?, ?, 'pending', 1, datetime('now'))
-        `)
-        .bind(result.id, position.id, i)
-        .run();
+    // SAFE PATTERN: Create election as INACTIVE first, then activate only if everything succeeds
+    // This prevents data corruption if election_positions creation fails
+    const result = await DB
+      .prepare(`
+        INSERT INTO elections (name, is_active, created_at)
+        VALUES (?, 0, datetime('now'))
+        RETURNING id, name, is_active, created_at, closed_at
+      `)
+      .bind(body.name)
+      .first<D1ElectionRow>();
+
+    if (!result) {
+      return errorResponse("Erro ao criar eleição", 500);
     }
 
-    const election = normalizeElection(result);
-    return jsonResponse(election, 201);
+    // CRITICAL: Create election_position for each position, all starting as 'pending'
+    // Use Promise.all for atomic-like behavior (all succeed or all fail)
+    try {
+      await Promise.all(
+        positions.map((position: any, i: number) =>
+          DB.prepare(`
+            INSERT INTO election_positions (
+              election_id, 
+              position_id, 
+              order_index, 
+              status, 
+              current_scrutiny,
+              created_at
+            )
+            VALUES (?, ?, ?, 'pending', 1, datetime('now'))
+          `)
+          .bind(result.id, position.id, i)
+          .run()
+        )
+      );
+
+      // SUCCESS: All positions created. Now safe to activate this election and deactivate others.
+      // SAVE currently active election IDs for rollback if activation fails
+      const previouslyActive = await DB
+        .prepare("SELECT id FROM elections WHERE is_active = 1")
+        .all<{ id: number }>();
+      
+      const previousActiveIds = previouslyActive.results.map(e => e.id);
+
+      try {
+        // Deactivate all other elections first
+        await DB.prepare("UPDATE elections SET is_active = 0 WHERE is_active = 1").run();
+        
+        // Then activate the new election
+        await DB.prepare("UPDATE elections SET is_active = 1 WHERE id = ?").bind(result.id).run();
+      } catch (activationError) {
+        // CRITICAL: Restore previously active elections
+        if (previousActiveIds.length > 0) {
+          await Promise.all(
+            previousActiveIds.map(id =>
+              DB.prepare("UPDATE elections SET is_active = 1 WHERE id = ?").bind(id).run()
+            )
+          );
+        }
+        throw activationError;
+      }
+
+    } catch (error) {
+      // ROLLBACK: Delete the election AND any election_positions created
+      await DB.prepare("DELETE FROM election_positions WHERE election_id = ?").bind(result.id).run();
+      await DB.prepare("DELETE FROM elections WHERE id = ?").bind(result.id).run();
+      
+      throw new Error("Erro ao criar eleição: " + (error instanceof Error ? error.message : 'Unknown error'));
+    }
+
+    // Return the election with updated is_active status
+    const finalElection = {
+      id: result.id,
+      name: result.name,
+      isActive: true,
+      createdAt: result.created_at,
+      closedAt: result.closed_at,
+    };
+
+    return jsonResponse(finalElection, 201);
   } catch (error) {
     return handleError(error);
   }
