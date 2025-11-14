@@ -328,6 +328,10 @@ export class SQLiteStorage implements IStorage {
       `).run(row.id, positions[i].id, i);
     }
     
+    // Initialize attendance for all active members (all start as not present)
+    // Admin must mark members as present before opening the first position
+    this.initializeAttendance(row.id);
+    
     return {
       id: row.id,
       name: row.name,
@@ -545,6 +549,9 @@ export class SQLiteStorage implements IStorage {
           WHERE id = ?
         `).run(nextRow.id);
         
+        // Create attendance snapshot for this position
+        this.createAttendanceSnapshot(nextRow.id);
+        
         return this.getActiveElectionPosition(electionId);
       }
       
@@ -578,6 +585,9 @@ export class SQLiteStorage implements IStorage {
         SET status = 'active', opened_at = datetime('now')
         WHERE id = ?
       `).run(nextRow.id);
+      
+      // Create attendance snapshot for this position
+      this.createAttendanceSnapshot(nextRow.id);
       
       return this.getActiveElectionPosition(electionId);
     }
@@ -672,6 +682,12 @@ export class SQLiteStorage implements IStorage {
     const activePosition = this.getActiveElectionPosition(position.electionId);
     if (activePosition) {
       throw new Error("Não é possível abrir um novo cargo enquanto outro ainda está ativo. Aguarde até que o cargo atual seja decidido pela votação ou complete o processo de votação.");
+    }
+
+    // Check if at least one member is marked as present
+    const presentCount = this.getPresentCount(position.electionId);
+    if (presentCount === 0) {
+      throw new Error("Não é possível abrir a votação sem nenhum membro presente. Marque a presença dos membros primeiro.");
     }
 
     // SEQUENTIAL VOTING: Check if all previous positions are completed

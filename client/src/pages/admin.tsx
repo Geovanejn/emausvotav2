@@ -1202,6 +1202,17 @@ export default function AdminPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
+                    {!activePosition && (
+                      <div className="p-3 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg">
+                        <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                          Nenhum cargo ativo
+                        </p>
+                        <p className="text-xs text-amber-600 dark:text-amber-300 mt-1">
+                          1. Marque a presença dos membros acima<br />
+                          2. Clique em "Abrir" no primeiro cargo abaixo para iniciar a votação
+                        </p>
+                      </div>
+                    )}
                     {activePosition && (
                       <div className="p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
                         <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
