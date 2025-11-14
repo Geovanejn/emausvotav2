@@ -45,6 +45,20 @@ export async function onRequestPost(context: EventContext) {
 
     const positions = positionsResult.results;
 
+    // GUARD: Prevent creating elections without positions (would break the system)
+    if (!positions || positions.length === 0) {
+      // Rollback: Delete the election we just created since it would be broken
+      await DB
+        .prepare("DELETE FROM elections WHERE id = ?")
+        .bind(result.id)
+        .run();
+      
+      return errorResponse(
+        "Não é possível criar eleição sem cargos cadastrados. Por favor, cadastre os cargos primeiro.",
+        400
+      );
+    }
+
     // Create election_position for each position, all starting as 'pending'
     for (let i = 0; i < positions.length; i++) {
       const position = positions[i] as any;

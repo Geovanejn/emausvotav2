@@ -10,20 +10,25 @@
 - ✅ `functions/api/elections/index.ts` agora cria `election_positions` automaticamente
 - ✅ Desativa eleições ativas anteriores antes de criar nova
 - ✅ Cria uma `election_position` para cada cargo (`position`) no sistema
+- ✅ **VALIDAÇÃO:** Previne criação de eleições sem cargos cadastrados (retorna erro 400)
 
-### 2. Script de Correção para Eleições Existentes
+### 2. Scripts de Correção e Setup
 
-Execute no terminal Cloudflare:
-
+**A. Popular cargos (OBRIGATÓRIO antes de criar eleições):**
 ```bash
-# Corrigir eleições quebradas no D1 (produção)
+# Criar os cargos padrão no D1
+npx wrangler d1 execute emausvota-db --remote --file=seed-positions.sql
+```
+
+**B. Corrigir eleições existentes quebradas:**
+```bash
+# Corrigir eleições criadas sem election_positions
 npx wrangler d1 execute emausvota-db --remote --file=fix-broken-elections.sql
 ```
 
-**O que o script faz:**
-1. Identifica eleições sem `election_positions`
-2. Cria `election_positions` para cada cargo
-3. Verifica que todas as eleições agora têm cargos
+**O que os scripts fazem:**
+- `seed-positions.sql`: Cria os 5 cargos padrão (Presidente, Vice, Secretário, Tesoureiro, Conselheiro)
+- `fix-broken-elections.sql`: Corrige eleições já criadas sem election_positions
 
 ## 📋 Passos de Recuperação Completa
 
