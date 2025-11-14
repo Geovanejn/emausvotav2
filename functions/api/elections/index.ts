@@ -18,8 +18,13 @@ export async function onRequestPost(context: EventContext) {
       return errorResponse("Nome da eleição é obrigatório");
     }
 
+    const { DB } = context.env;
+
+    // Deactivate all current active elections
+    await DB.prepare("UPDATE elections SET is_active = 0 WHERE is_active = 1").run();
+
     // Create election
-    const result = await context.env.DB
+    const result = await DB
       .prepare(`
         INSERT INTO elections (name, is_active, created_at)
         VALUES (?, ?, datetime('now'))
@@ -30,6 +35,33 @@ export async function onRequestPost(context: EventContext) {
 
     if (!result) {
       return errorResponse("Erro ao criar eleição", 500);
+    }
+
+    // CRITICAL: Create election_positions for all positions (sequential voting)
+    // Get all positions ordered by display_order
+    const positionsResult = await DB
+      .prepare("SELECT * FROM positions ORDER BY display_order ASC")
+      .all();
+
+    const positions = positionsResult.results;
+
+    // Create election_position for each position, all starting as 'pending'
+    for (let i = 0; i < positions.length; i++) {
+      const position = positions[i] as any;
+      await DB
+        .prepare(`
+          INSERT INTO election_positions (
+            election_id, 
+            position_id, 
+            order_index, 
+            status, 
+            current_scrutiny,
+            created_at
+          )
+          VALUES (?, ?, ?, 'pending', 1, datetime('now'))
+        `)
+        .bind(result.id, position.id, i)
+        .run();
     }
 
     const election = normalizeElection(result);
