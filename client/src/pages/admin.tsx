@@ -574,7 +574,7 @@ export default function AdminPage() {
         throw new Error("Erro ao buscar dados de auditoria");
       }
       
-      const auditData = await response.json();
+      const auditData: any = await response.json();
       auditData.presidentName = selectedPresident.fullName;
       
       // Save verification hash to database
@@ -879,7 +879,7 @@ export default function AdminPage() {
     try {
       const response = await apiRequest("POST", "/api/upload/photo", {
         base64Image: croppedImage,
-      }) as { photoUrl: string };
+      }) as unknown as { photoUrl: string };
 
       if (response.photoUrl) {
         if (cropContext === "add") {
