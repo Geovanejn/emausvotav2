@@ -1,7 +1,6 @@
 name = "emausvota-worker"
 compatibility_date = "2025-01-01"
 pages_build_output_dir = "dist/public"
-account_id = "7e46c8d99b0909238b20c614d41f0234"
 
 ####################################
 # D1 DATABASE
