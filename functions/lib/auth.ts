@@ -1,6 +1,6 @@
 // Authentication utilities for Cloudflare Functions
 import jwt from "@tsndr/cloudflare-worker-jwt";
-import bcrypt from "bcryptjs";
+import { hashPassword as cryptoHashPassword, comparePassword as cryptoComparePassword } from "@shared/crypto";
 import { z } from "zod";
 import type { User } from "@shared/schema";
 import type { EventContext, AuthUser, AuthContext } from "./types";
@@ -40,14 +40,14 @@ export async function generateToken(user: Omit<User, "password">, jwtSecret: str
 }
 
 export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 10);
+  return cryptoHashPassword(password);
 }
 
 export async function comparePassword(
   password: string,
   hashedPassword: string
 ): Promise<boolean> {
-  return bcrypt.compare(password, hashedPassword);
+  return cryptoComparePassword(password, hashedPassword);
 }
 
 export async function authenticateToken(context: EventContext): Promise<AuthUser | null> {

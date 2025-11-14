@@ -1,10 +1,14 @@
 import { Resend } from "resend";
-import fs from "fs";
-import path from "path";
+import { Buffer } from "node:buffer";
 import { getFirstAndLastName } from "@shared/utils";
 import { getGravatarUrl } from "@shared/schema";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+
+// R2 public URL for logo (Cloudflare R2 storage)
+const LOGO_URL = process.env.R2_PUBLIC_URL 
+  ? `${process.env.R2_PUBLIC_URL}/logo.png`
+  : "https://pub-39e66b84b6f1472fb913c941ca636fc6.r2.dev/logo.png";
 
 // Helper function to download image from URL and return as Buffer
 async function downloadImageAsBuffer(imageUrl: string): Promise<Buffer | null> {
@@ -22,20 +26,30 @@ async function downloadImageAsBuffer(imageUrl: string): Promise<Buffer | null> {
   }
 }
 
-// Read logo for CID embedding (Content-ID attachment method for Gmail compatibility)
+// Download logo from R2 for CID embedding (Content-ID attachment method for Gmail compatibility)
 // This method is more reliable than base64 data URIs which Gmail blocks
+// Logo is fetched from R2 storage (compatible with both Node.js and Cloudflare Workers)
 let logoBuffer: Buffer | null = null;
-let logoPath = "";
-try {
-  logoPath = path.join(process.cwd(), "client", "public", "logo.png");
-  logoBuffer = fs.readFileSync(logoPath);
-  const sizeKB = Math.round(logoBuffer.length / 1024);
-  console.log(`✓ Logo loaded successfully for CID email embedding from: ${logoPath}`);
-  console.log(`  Logo size: ${sizeKB}KB (will be attached via CID for Gmail compatibility)`);
-} catch (error) {
-  console.error("Error loading logo for email:", error);
-  console.error("Attempted path:", path.join(process.cwd(), "client", "public", "logo.png"));
+
+async function loadLogoFromR2(): Promise<void> {
+  try {
+    console.log(`⏳ Downloading logo from R2: ${LOGO_URL}`);
+    logoBuffer = await downloadImageAsBuffer(LOGO_URL);
+    if (logoBuffer) {
+      const sizeKB = Math.round(logoBuffer.length / 1024);
+      console.log(`✓ Logo loaded successfully for CID email embedding from R2`);
+      console.log(`  Logo size: ${sizeKB}KB (will be attached via CID for Gmail compatibility)`);
+    } else {
+      console.warn("⚠ Failed to download logo from R2, emails will be sent without logo");
+    }
+  } catch (error) {
+    console.error("Error loading logo from R2:", error);
+    console.warn("⚠ Emails will be sent without logo");
+  }
 }
+
+// Load logo on module initialization (works in both Node.js and Cloudflare Workers)
+loadLogoFromR2().catch(err => console.error("Failed to load logo:", err));
 
 export async function sendVerificationEmail(email: string, code: string): Promise<boolean> {
   if (!resend) {

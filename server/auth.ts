@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
+import { hashPassword as cryptoHashPassword, comparePassword as cryptoComparePassword } from "@shared/crypto";
 import type { User } from "@shared/schema";
 
 const JWT_SECRET = process.env.JWT_SECRET || "emaus-vota-secret-key-2025";
@@ -23,14 +23,14 @@ export function generateToken(user: Omit<User, "password">): string {
 }
 
 export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 10);
+  return cryptoHashPassword(password);
 }
 
 export async function comparePassword(
   password: string,
   hashedPassword: string
 ): Promise<boolean> {
-  return bcrypt.compare(password, hashedPassword);
+  return cryptoComparePassword(password, hashedPassword);
 }
 
 export function authenticateToken(
