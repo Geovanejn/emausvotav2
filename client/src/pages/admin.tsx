@@ -875,11 +875,31 @@ export default function AdminPage() {
     }
   };
 
-  const handleCropComplete = (croppedImage: string) => {
-    if (cropContext === "add") {
-      setNewMember({ ...newMember, photoUrl: croppedImage });
-    } else if (cropContext === "edit" && editingMember) {
-      setEditingMember({ ...editingMember, photoUrl: croppedImage });
+  const handleCropComplete = async (croppedImage: string) => {
+    try {
+      const response = await apiRequest("POST", "/api/upload/photo", {
+        base64Image: croppedImage,
+      }) as { photoUrl: string };
+
+      if (response.photoUrl) {
+        if (cropContext === "add") {
+          setNewMember({ ...newMember, photoUrl: response.photoUrl });
+        } else if (cropContext === "edit" && editingMember) {
+          setEditingMember({ ...editingMember, photoUrl: response.photoUrl });
+        }
+
+        toast({
+          title: "Foto carregada",
+          description: "A foto foi enviada com sucesso para o armazenamento",
+        });
+      }
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+      toast({
+        title: "Erro ao enviar foto",
+        description: error instanceof Error ? error.message : "Não foi possível enviar a foto",
+        variant: "destructive",
+      });
     }
   };
 
